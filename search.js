@@ -17,28 +17,45 @@
 // wordlist: [ 'the', 'lion', 'king', 'can', 'you', 'feel', 'the', 'love' ]
 
 module.exports = function search (grid, wordlist) {
+    let rowDirections = [-1,-1,-1,0,0,1,1,1]
+    let colDirections = [-1,0,1,-1,1,-1,0,1]
+    let results = []
     // Get the current word
+
     for(let word = 0; word < wordlist.length; word ++){
         let currentWord = wordlist[word].toLowerCase().split('')
+
         // Get the current character
         for(let row = 0; row < grid.length; row ++ ){
             for(let col = 0; col < grid[row].length; col ++){
                 let currentChar = grid[row][col].toLowerCase()
+
                 // Check to see if the current character matches the first letter in the word.
-                if(currentChar == currentWord[0]){
-                    let surroundingLetters = [
-                        grid[row - 1][col - 1],
-                        grid[row - 1][col],
-                        grid[row - 1][col + 1],
-                        grid[row][col - 1],
-                        grid[row][col + 1],
-                        grid[row + 1][col - 1],
-                        grid[row + 1][col],
-                        grid[row + 1][col + 1],
-                    ]
-                    console.log('surroundinLetters:', surroundingLetters)
+                if(currentWord[0] === currentChar){
+                    
+                    // Loop through the directions to check the surrounding letters.
+                    for(let dir = 0; dir <= 8; dir++){
+                        // Set initial values for the direction to check in.
+                        let rowDir = row + rowDirections[dir]
+                        let colDir = col + colDirections[dir]
+                        let i
+                        // Loop through the rest of the word.
+                        for(i = 1; i < currentWord.length; i ++){
+                            if(!grid[rowDir] || !grid[rowDir][colDir] || grid[rowDir][colDir].toLowerCase() !== currentWord[i]){
+                                break
+                            }
+                            // Move directions to where the letters matched.
+                            rowDir += rowDirections[dir]
+                            colDir += colDirections[dir]
+                        }
+                        // Check to see if it found the whole word and send the word to results.
+                        if(i === currentWord.length){
+                            results.push(currentWord.join(''))
+                        }    
+                    }
                 }
             }
         }
     }
+    return results
 }
